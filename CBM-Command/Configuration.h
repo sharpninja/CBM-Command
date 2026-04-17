@@ -58,22 +58,21 @@ struct Configuration
     unsigned char color_text_other;		// Color for areas not covered above
 };
 
-extern struct Configuration g_config;
-
 /* Backward compatibility aliases */
-#define defaultLeftDrive       g_config.defaultLeftDrive
-#define defaultRightDrive      g_config.defaultRightDrive
-#define defaultLeftDisk        g_config.defaultLeftDisk
-#define defaultRightDisk       g_config.defaultRightDisk
-#define color_background       g_config.color_background
-#define color_border           g_config.color_border
-#define color_selector         g_config.color_selector
-#define color_text_borders     g_config.color_text_borders
-#define color_text_menus       g_config.color_text_menus
-#define color_text_files       g_config.color_text_files
-#define color_text_status      g_config.color_text_status
-#define color_text_highlight   g_config.color_text_highlight
-#define color_text_other       g_config.color_text_other
+extern unsigned char defaultLeftDrive;
+extern unsigned char defaultRightDrive;
+extern char defaultLeftDisk[4];
+extern char defaultRightDisk[4];
+
+extern unsigned char color_background;
+extern unsigned char color_border;
+extern unsigned char color_selector;
+extern unsigned char color_text_borders;
+extern unsigned char color_text_menus;
+extern unsigned char color_text_files;
+extern unsigned char color_text_status;
+extern unsigned char color_text_highlight;
+extern unsigned char color_text_other;
 
 /* Keys Configuration */
 // Key-Map Indices

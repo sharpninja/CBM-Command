@@ -51,11 +51,15 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globals.h"
 #include "screen.h"
 
+/* struct Configuration g_config; */
+
 /* Drive Configuration */
+/*
 unsigned char defaultLeftDrive;
 unsigned char defaultRightDrive;
 char defaultLeftDisk[4]  = "0";
 char defaultRightDisk[4] = "0";
+*/
 
 /* Keys Configuration */
 char keyMap[] =
@@ -140,6 +144,19 @@ unsigned char color_text_highlight = BCOLOR_YELLOW;
 // because nothing on those systems will touch them.
 unsigned char color_text_borders;
 #endif
+
+/*
+unsigned char color_background;
+unsigned char color_border;
+unsigned char color_selector;
+unsigned char color_text_borders;
+unsigned char color_text_menus;
+unsigned char color_text_files;
+unsigned char color_text_status;
+unsigned char color_text_other;
+unsigned char color_text_highlight;
+unsigned char color_text_borders;
+*/
 
 /* Load configuration
  * --------------------------
