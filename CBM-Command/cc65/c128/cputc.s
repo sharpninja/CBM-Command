@@ -1,90 +1,93 @@
 ;
-; 2003-04-09, Ullrich von Bassewitz
-; 2020-09-22, Greg King
+; Ullrich von Bassewitz, 2000-08-06, 2002-12-21
 ; Using lots of code from MagerValp, MagerValp@cling.gu.se
 ;
-; void __fastcall__ cputcxy (unsigned char x, unsigned char y, char c);
-; void __fastcall__ cputc (char c);
+; void cputcxy (unsigned char x, unsigned char y, char c);
+; void cputc (char c);
+;
+; Important note: The implementation of cputs() relies on the cputc() function
+; not clobbering ptr1. Beware when rewriting or changing this function!
 ;
 
-	.export		_cputcxy, _cputc
-	.export		cputdirect, putchar, newline, plot
+        .export         _cputcxy, _cputc, cputdirect, putchar
+        .export         newline, plot
+        .import         gotoxy
 
-	.import		callgoto
-	.import		PLOT, NEWLINE, PRINT
+        .include        "c128.inc"
 
-	.include	"c128.inc"
+; Direct KERNAL jump vectors for bank 0 (fixed addresses)
+NEWLINE := $D411
+PRINT   := $D2E1
+PLOT    := $D1E9
 
-newline	:=	NEWLINE
+newline         = NEWLINE
 
 ;--------------------------------------------------------------------------
 
+.code
+
 _cputcxy:
-	jsr	callgoto	; Set cursor
+        pha                     ; Save C
+        jsr      gotoxy         ; Set cursor, drop x and y
+        pla                     ; Restore C
 
-; Plot a character -- also used as and internal function.
+; Plot a character - also used as internal function
 
-_cputc:	cmp	#$0D		; LF?
-	bne	L2
-	jmp	NEWLINE		; Update cursor position
+_cputc: cmp     #$0A            ; CR?
+        beq     cr              ; Output a cr
 
-L2:	cmp	#$0A		; CR?
-	beq	cr		; Output a cr
+        cmp     #$0D            ; LF?
+        bne     L2
+        jmp     NEWLINE         ; Update cursor position
 
-; Printable char., of some sort.
-; Convert it from PETSCII into a screen-code.
-; (Note: This new method combines the fast speed of table look-up
-;  with the small size of the computation method.  I call it
-;  "folded-table look-up." -GK)
+; Printable char of some sort
 
-	cmp	#$FF		; BASIC token
-	bne	convert
-	lda	#$DE		; Pi symbol
-convert:
-	tay
-	lsr	a		; Divide by 32
-	lsr	a
-	lsr	a
-	lsr	a
-	lsr	a
-	tax			; .X = %00000xxx
-	tya
-	eor	pet_to_screen,x
+L2:     cmp     #' '
+        bcc     cputdirect      ; Other control char
+        tay
+        bmi     L5
+        cmp     #$60
+        bcc     L3
+        and     #$DF
+        bne     cputdirect      ; Branch always
+L3:     and     #$3F
 
-; Output one character to the screen. We will disable scrolling while doing so.
+; Output one character to the screen. We will disable scrolling while doing so
 
 cputdirect:
-	tax			; Save output char
-	lda	SCROLL
-	pha			; Save scroll flag
-	lda	#$C0
-	sta	SCROLL		; Disable scrolling
-	txa			; Restore output char
-	jsr	PRINT
-	pla
-	sta	SCROLL		; Restore old scroll flag
-	rts
+        tax                     ; Save output char
+        lda     SCROLL
+        pha                     ; Save scroll flag
+        lda     #$C0
+        sta     SCROLL          ; Disable scrolling
+        txa                     ; Restore output char
+        jsr     PRINT
+        pla
+        sta     SCROLL          ; Restore old scroll flag
+        rts
+
+; Handle character if high bit set
+
+L5:     and     #$7F
+        cmp     #$7F            ; PI?
+        bne     L6
+        lda     #$5E            ; Load screen code for PI
+L6:     ora     #$40
+        bne     cputdirect      ; Branch always
 
 ; Carriage return
 
-cr:	lda	#0
-	sta	CURS_X
+cr:     lda     #0
+        sta     CURS_X
 
-; Set the cursor position, calculate RAM pointers.
+; Set cursor position, calculate RAM pointers
 
-plot:	ldy	CURS_X
-	ldx	CURS_Y
-	clc
-	jmp	PLOT		; Set the new cursor
+plot:   ldy     CURS_X
+        ldx     CURS_Y
+        clc
+        jmp     PLOT            ; Set the new cursor
 
-; Write one character to the screen without doing anything else, return the x
-; position in .Y
+; Write one character to the screen without doing anything else, return X
+; position in Y
 
-putchar	:=	$CC2F
-
-.rodata
-
-pet_to_screen:
-	.byte %10000000,%00000000,%01000000,%00100000  ; PETSCII -> screen-code
-	.byte %01000000,%11000000,%10000000,%10000000
-
+putchar = $CC2F
