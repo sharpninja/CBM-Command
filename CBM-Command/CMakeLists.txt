@@ -5,10 +5,19 @@ project(CBM-Command C ASM)
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR 6502)
 
-set(CMAKE_C_COMPILER cl65)
-set(CMAKE_ASM_COMPILER ca65)
-set(CMAKE_AR ar65)
-set(CMAKE_RANLIB ranlib65)
+find_program(CC65_CL65 cl65)
+find_program(CC65_CA65 ca65)
+find_program(CC65_AR65 ar65)
+find_program(CC65_RANLIB ranlib65)
+
+if(NOT CC65_CL65)
+    message(FATAL_ERROR "cl65 not found. Install CC65 toolchain.")
+endif()
+
+set(CMAKE_C_COMPILER ${CC65_CL65})
+set(CMAKE_ASM_COMPILER ${CC65_CA65})
+set(CMAKE_AR ${CC65_AR65})
+set(CMAKE_RANLIB ${CC65_RANLIB})
 
 # Platform Targets
 set(PLATFORMS c64 c128 pet plus4 vic20)
