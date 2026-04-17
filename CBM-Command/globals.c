@@ -48,7 +48,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "screen.h"
 //#include "PlatformSpecific.h"
 
-unsigned char buffer[47];	// (must be long enough to hold configuration file)
+// Shared temporary buffer. Used for configuration load at startup,
+// then safely reused for all temporary operations after initialization.
+// Never allocated twice. No net RAM footprint change.
+unsigned char buffer[47];
 
 #ifdef COLOR_RED
 unsigned char outsideFrame;
