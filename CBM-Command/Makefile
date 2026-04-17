@@ -7,12 +7,14 @@ CL := $(CC65_PATH)cl65
 AR := $(CC65_PATH)ar65
 
 # Cross platform utilities
+# Note: GNU Make 4.0+ will not expand call macros in rule prerequisites correctly
+# Always use simple commands with implicit glob support
 ifeq ($(OS),Windows_NT)
-  RM    := if exist $(1) del /q /f $(1)
-  MKDIR := if not exist $(1) mkdir $(1)
+  RM    := del /q /f 2>nul || ver >nul
+  MKDIR := mkdir 2>nul || ver >nul
   CP    := copy /y
   CHMOD := @rem
-  RMDIR := if exist $(1) rmdir /s /q $(1)
+  RMDIR := rmdir /s /q 2>nul || ver >nul
 else
   RM    := rm -f
   MKDIR := mkdir -p
