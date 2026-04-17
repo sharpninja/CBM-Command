@@ -54,12 +54,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* struct Configuration g_config; */
 
 /* Drive Configuration */
-/*
-unsigned char defaultLeftDrive;
-unsigned char defaultRightDrive;
+unsigned char defaultLeftDrive = 8;
+unsigned char defaultRightDrive = 9;
 char defaultLeftDisk[4]  = "0";
 char defaultRightDisk[4] = "0";
-*/
 
 /* Keys Configuration */
 char keyMap[] =
