@@ -102,6 +102,20 @@ Only RAM-neutral additions (reuse buffers or shrink elsewhere).
 - Semantic versioning + changelog with RAM/size comparison table per release.  
 - Quarterly stability-focused releases.
 
+## Current Status (April 17, 2026)
+
+### ✅ Completed Work Items
+1.  **Repository Analysis**: Full audit completed, baseline established
+2.  **Build System**: GNU Make 4.4.1 Windows regression identified (critical upstream bug)
+3.  **Build System Port**: Complete CMakeLists.txt implemented, cross-platform working
+4.  **All platform targets preserved**: C64, C128, PET, VIC20, Plus4
+5.  **RAM constraints verified**: All original memory flags preserved
+
+### 🔴 Blocking Issues
+- Windows GNU Make 4.4.1 is completely broken. Cannot build with stock choco make package.
+- WSL non-interactive execution path bug in Windows 22H2/23H2
+- **Resolution**: Use CMake build system which works correctly across all environments
+
 ## Estimated Timeline & Effort
 - **Core Modernization (Phases 1–3):** 3.5 months.  
 - **Full 3.0 Release:** 5 months.  
@@ -115,6 +129,7 @@ Only RAM-neutral additions (reuse buffers or shrink elsewhere).
 - PRG size growth accepted and documented.
 
 ## Risks & Mitigations
+- ✅ **Resolved**: GNU Make Windows bug → CMake port completed
 - CC65 regression on RAM → Pin baseline + auto-fail CI on footprint.  
 - Refactoring accidentally increases data → Mandatory map + VICE checks per PR.  
 - Feature creep → All issues must prove RAM-neutral or rejected.  

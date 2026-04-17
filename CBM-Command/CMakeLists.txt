@@ -1,0 +1,85 @@
+cmake_minimum_required(VERSION 3.25)
+project(CBM-Command C ASM)
+
+# CC65 Toolchain Configuration
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR 6502)
+
+set(CMAKE_C_COMPILER cl65)
+set(CMAKE_ASM_COMPILER ca65)
+set(CMAKE_AR ar65)
+set(CMAKE_RANLIB ranlib65)
+
+# Platform Targets
+set(PLATFORMS c64 c128 pet plus4 vic20)
+
+# Common Sources
+set(CONFIG_SOURCES
+    Configuration.c
+    ConfigurationManager.c
+    globalInput.c
+    globals.c
+    screen.c
+)
+
+set(MAIN_SOURCES
+    CBM-Command.c
+    CBM-REL.c
+    Configuration.c
+    DriveMenu.c
+    drives.c
+    FileMenu.c
+    globalInput.c
+    globals.c
+    input.c
+    menus.c
+    screen.c
+    Viewer.c
+    builtStamp.c
+)
+
+set(ASM_COMMON
+    res/common/driveRoutines.s
+    cc65/common/_printf.s
+)
+
+set(LIB_SOURCES
+    cc65/common/strcat.s
+    cc65/cbm/cbm_dir.c
+    cc65/cbm/cbm_open.s
+    cc65/cbm/cbm_read.s
+    cc65/cbm/cclear.s
+    cc65/cbm/chline.s
+    cc65/cbm/cvline.s
+    cc65/conio/cputs.s
+    cc65/conio/callgoto.s
+)
+
+# Build flags
+set(CMAKE_C_FLAGS "-Or -Wl -D__STACKSIZE__=$$400")
+
+# Per platform build
+foreach(PLATFORM ${PLATFORMS})
+    string(TOUPPER ${PLATFORM} PLATFORM_UPPER)
+
+    add_executable(cbmcommand_${PLATFORM} ${MAIN_SOURCES} ${ASM_COMMON} res/${PLATFORM}/PlatformSpecific.s)
+    set_target_properties(cbmcommand_${PLATFORM} PROPERTIES COMPILE_FLAGS "-t ${PLATFORM}")
+    set_target_properties(cbmcommand_${PLATFORM} PROPERTIES OUTPUT_NAME "cbmcommand.${PLATFORM}")
+
+    add_executable(cbmcmdcfg_${PLATFORM} ${CONFIG_SOURCES} res/${PLATFORM}/PlatformSpecific.s)
+    set_target_properties(cbmcmdcfg_${PLATFORM} PROPERTIES COMPILE_FLAGS "-t ${PLATFORM}")
+    set_target_properties(cbmcmdcfg_${PLATFORM} PROPERTIES OUTPUT_NAME "cbmcmdcfg.${PLATFORM}")
+endforeach()
+
+# PET has 40/80 column variants
+add_executable(cbmcommand_pet80 ${MAIN_SOURCES} ${ASM_COMMON} res/pet/PlatformSpecific.s)
+set_target_properties(cbmcommand_pet80 PROPERTIES COMPILE_FLAGS "-t pet -D_PET80_")
+set_target_properties(cbmcommand_pet80 PROPERTIES OUTPUT_NAME "cbmcommand.pet80")
+
+add_executable(cbmcmdcfg_pet80 ${CONFIG_SOURCES} res/pet/PlatformSpecific.s)
+set_target_properties(cbmcmdcfg_pet80 PROPERTIES COMPILE_FLAGS "-t pet -D_PET80_")
+set_target_properties(cbmcmdcfg_pet80 PROPERTIES OUTPUT_NAME "cbmcmdcfg.pet80")
+
+# D64/D80 Image targets
+add_custom_target(D64 DEPENDS cbmcommand_c64 cbmcommand_c128 cbmcommand_vic20 cbmcommand_plus4)
+add_custom_target(D80 DEPENDS cbmcommand_c64 cbmcommand_c128 cbmcommand_vic20 cbmcommand_plus4 cbmcommand_pet cbmcommand_pet80)

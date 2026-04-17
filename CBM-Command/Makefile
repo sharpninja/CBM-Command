@@ -89,11 +89,24 @@ CONFIG_PROGRAM := $(CONFIG_TITLE).$(T)
 
 LIBS := $(T)/cc65.lib
 
+# Workaround for Windows GNU Make 4.4.1 case sensitivity bug
 .PHONY: all
 all: $(addsuffix progs,c128 c64 pet plus4 vic20)
 
-%progs:
-	$(MAKE) progs T:=$*
+c128progs:
+	$(MAKE) progs T:=c128
+
+c64progs:
+	$(MAKE) progs T:=c64
+
+petprogs:
+	$(MAKE) progs T:=pet
+
+plus4progs:
+	$(MAKE) progs T:=plus4
+
+vic20progs:
+	$(MAKE) progs T:=vic20
 
 ifeq "$(T)" "pet"
 progs: pet/$(PROGRAM)40 pet/$(PROGRAM)80 pet/$(CONFIG_PROGRAM)40 pet/$(CONFIG_PROGRAM)80
