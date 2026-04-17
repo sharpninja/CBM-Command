@@ -1,0 +1,47 @@
+name: Build & RAM Verification
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: CBM-Command Build
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cc65 vice cmake make
+
+      - name: Build all targets
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+          make -j$(nproc)
+
+      - name: Verify RAM footprint
+        run: |
+          cd vice-test-runner
+          npm install -g .
+          
+          # Verify all platforms against committed baselines
+          vicetest verify baselines/c64.json ../build/CBM-Command.c64.prg
+          vicetest verify baselines/c128.json ../build/CBM-Command.c128.prg
+          vicetest verify baselines/pet.json ../build/CBM-Command.pet.prg
+          vicetest verify baselines/vic20.json ../build/CBM-Command.vic20.prg
+          vicetest verify baselines/plus4.json ../build/CBM-Command.plus4.prg
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBM-Command
+          path: build/*.prg
