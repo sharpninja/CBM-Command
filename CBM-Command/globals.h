@@ -40,6 +40,23 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define __fastcall __fastcall__
 
+/**
+ * Global system state
+ * All existing globals overlaid onto this struct with 0 net RAM increase
+ */
+struct GlobalState
+{
+    unsigned char buffer[47];
+    
+#ifdef COLOR_RED
+    unsigned char outsideFrame;
+    unsigned char outsideScreen;
+    unsigned char outsideText;
+#endif
+};
+
+extern struct GlobalState g_state;
+
 //#include <stdbool.h>
 #include <conio.h>
 

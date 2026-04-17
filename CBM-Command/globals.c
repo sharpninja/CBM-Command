@@ -51,6 +51,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //unsigned char size_x, size_y;
 
 //bool arePanelsOn = true;
+struct GlobalState g_state;
+/*
 unsigned char buffer[47];	// (must be long enough to hold configuration file)
 
 #ifdef COLOR_RED
@@ -58,6 +60,7 @@ unsigned char outsideFrame;
 unsigned char outsideScreen;
 unsigned char outsideText;
 #endif
+*/
 
 // Obtains the screen's attributes;
 // and, sets up global values, as necessary.

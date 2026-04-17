@@ -38,22 +38,27 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _CONFIGURATION_H
 #define _CONFIGURATION_H
 
-/* Drive Configuration */
-extern unsigned char defaultLeftDrive;		// Left Panel unit on start-up
-extern unsigned char defaultRightDrive;		// Right Panel unit on start-up
-extern char defaultLeftDisk[4];				// Left Panel drive/partition on start-up
-extern char defaultRightDisk[4];			// Right Panel drive/partition on start-up
+struct Configuration
+{
+    /* Drive Configuration */
+    unsigned char defaultLeftDrive;		// Left Panel unit on start-up
+    unsigned char defaultRightDrive;		// Right Panel unit on start-up
+    char defaultLeftDisk[4];				// Left Panel drive/partition on start-up
+    char defaultRightDisk[4];			// Right Panel drive/partition on start-up
 
-/* Color Configuration */
-extern unsigned char color_background;		// Background color for application
-extern unsigned char color_border;			// Border color (does nothing on C= 128)
-extern unsigned char color_selector;		// Color of the drive-/file-selector glyph
-extern unsigned char color_text_borders;	// Color of panel borders
-extern unsigned char color_text_menus;		// Color of the function-key and other menues
-extern unsigned char color_text_files;		// Color of the filenames in the directory
-extern unsigned char color_text_status;		// Color of the status bar and its text
-extern unsigned char color_text_highlight;	// Color of text that needs to stand out
-extern unsigned char color_text_other;		// Color for areas not covered above
+    /* Color Configuration */
+    unsigned char color_background;		// Background color for application
+    unsigned char color_border;			// Border color (does nothing on C= 128)
+    unsigned char color_selector;		// Color of the drive-/file-selector glyph
+    unsigned char color_text_borders;	// Color of panel borders
+    unsigned char color_text_menus;		// Color of the function-key and other menues
+    unsigned char color_text_files;		// Color of the filenames in the directory
+    unsigned char color_text_status;		// Color of the status bar and its text
+    unsigned char color_text_highlight;	// Color of text that needs to stand out
+    unsigned char color_text_other;		// Color for areas not covered above
+};
+
+extern struct Configuration g_config;
 
 /* Keys Configuration */
 // Key-Map Indices
