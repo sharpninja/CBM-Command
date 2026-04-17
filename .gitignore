@@ -12,3 +12,6 @@ vic20
 *.map
 cbmcommand.d64
 cbmcommand.d80
+
+AGENTS-README-FIRST.yaml
+.mcpServer/
