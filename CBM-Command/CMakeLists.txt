@@ -24,27 +24,26 @@ set(PLATFORMS c64 c128 pet plus4 vic20)
 
 # Common Sources
 set(CONFIG_SOURCES
-    Configuration.c
-    ConfigurationManager.c
-    globalInput.c
-    globals.c
-    screen.c
+    src/core/Configuration.c
+    src/core/ConfigurationManager.c
+    src/core/globalInput.c
+    src/core/globals.c
+    src/ui/screen.c
 )
 
 set(MAIN_SOURCES
-    CBM-Command.c
-    CBM-REL.c
-    Configuration.c
-    DriveMenu.c
-    drives.c
-    FileMenu.c
-    globalInput.c
-    globals.c
-    input.c
-    menus.c
-    screen.c
-    Viewer.c
-    builtStamp.c
+    src/core/CBM-Command.c
+    src/core/CBM-REL.c
+    src/core/builtStamp.c
+    src/menus/CommandMenu.c
+    src/menus/DriveMenu.c
+    src/menus/FileMenu.c
+    src/menus/OptionMenu.c
+    src/drivers/drives.c
+    src/ui/input.c
+    src/ui/menus.c
+    src/ui/screen.c
+    src/ui/Viewer.c
 )
 
 set(ASM_COMMON

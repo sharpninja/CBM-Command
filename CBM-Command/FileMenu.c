@@ -639,7 +639,8 @@ void copyFiles(void)
 							cbm_close(3);
 
 							// Re-open it.
-							cbm_open(3, td, 3, targetFilename);
+							sprintf(buffer, "@0:%s", targetFilename);
+							cbm_open(3, td, 3, buffer);
 
 							writeStatusBar("Copying file...");
 							command.rec_number = 0;
