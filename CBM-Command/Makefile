@@ -6,11 +6,20 @@ LD := $(CC65_PATH)ld65
 CL := $(CC65_PATH)cl65
 AR := $(CC65_PATH)ar65
 
-# POSIX-style programs
-CHMOD := chmod +w
-CP := cp
-MKDIR := mkdir -p
-RMDIR := $(RM) -r
+# Cross platform utilities
+ifeq ($(OS),Windows_NT)
+  RM    := if exist $(1) del /q /f $(1)
+  MKDIR := if not exist $(1) mkdir $(1)
+  CP    := copy /y
+  CHMOD := @rem
+  RMDIR := if exist $(1) rmdir /s /q $(1)
+else
+  RM    := rm -f
+  MKDIR := mkdir -p
+  CP    := cp
+  CHMOD := chmod +w
+  RMDIR := rm -rf
+endif
 
 # VICE programs
 #VICEPATH := /usr/local/bin/
