@@ -117,13 +117,24 @@ struct panel_drive
 	//enum menus position;		// XXX: not used, anymore
 };
 
-/* GLOBAL VARIABLES */
-//extern struct drive_status drives[9];		// The collection of drive statuses
-extern struct panel_drive leftPanelDrive;	// The left panel
-extern struct panel_drive rightPanelDrive;	// The right panel
-extern struct panel_drive *selectedPanel;	// The current panel
+/* Global Drive State */
+struct DriveState
+{
+    //extern struct drive_status drives[9];		// The collection of drive statuses
+    struct panel_drive leftPanelDrive;	        // The left panel
+    struct panel_drive rightPanelDrive;	        // The right panel
+    struct panel_drive *selectedPanel;	        // The current panel
 
-extern unsigned char displayHeight;
+    unsigned char displayHeight;
+};
+
+extern struct DriveState g_drives;
+
+/* Backward compatibility aliases */
+#define leftPanelDrive      g_drives.leftPanelDrive
+#define rightPanelDrive     g_drives.rightPanelDrive
+#define selectedPanel       g_drives.selectedPanel
+#define displayHeight       g_drives.displayHeight
 
 /* METHODS */
 void initializeDrives(void);
