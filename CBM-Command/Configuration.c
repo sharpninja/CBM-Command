@@ -51,16 +51,14 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globals.h"
 #include "screen.h"
 
-/* struct Configuration g_config; */
-
-/* Drive Configuration */
-unsigned char defaultLeftDrive = 8;
-unsigned char defaultRightDrive = 9;
-char defaultLeftDisk[4]  = "0";
-char defaultRightDisk[4] = "0";
-
-/* Keys Configuration */
-char keyMap[] =
+struct ConfigurationState g_configstate = {
+    .config = {
+        .defaultLeftDrive = 8,
+        .defaultRightDrive = 9,
+        .defaultLeftDisk = "0",
+        .defaultRightDisk = "0"
+    },
+    .keyMap = {
 {
 	HK_COPY,			// 0
 	HK_CREATE_D64,		// 1
@@ -98,50 +96,49 @@ char keyMap[] =
 
 // Choose useful default colors for each model.
 #if defined(__C128__)
-unsigned char color_background	= COLOR_BLACK;
-unsigned char color_border		= COLOR_BLACK;
-unsigned char color_selector	= COLOR_WHITE;
-unsigned char color_text_borders= COLOR_GRAY3;
-unsigned char color_text_menus	= COLOR_WHITE;
-unsigned char color_text_files	= COLOR_YELLOW;
-unsigned char color_text_status = COLOR_GRAY3;
-unsigned char color_text_other	= COLOR_WHITE;
-unsigned char color_text_highlight = COLOR_YELLOW;
+    .config.color_background	= COLOR_BLACK,
+    .config.color_border		= COLOR_BLACK,
+    .config.color_selector	= COLOR_WHITE,
+    .config.color_text_borders= COLOR_GRAY3,
+    .config.color_text_menus	= COLOR_WHITE,
+    .config.color_text_files	= COLOR_YELLOW,
+    .config.color_text_status = COLOR_GRAY3,
+    .config.color_text_other	= COLOR_WHITE,
+    .config.color_text_highlight = COLOR_YELLOW
 #elif defined(__C64__) || defined(__CBM510__)
-unsigned char color_background	= COLOR_BLUE;
-unsigned char color_border		= COLOR_BLUE;
-unsigned char color_selector	= COLOR_WHITE;
-unsigned char color_text_borders= COLOR_GRAY2;
-unsigned char color_text_menus	= COLOR_GRAY3;
-unsigned char color_text_files	= COLOR_GRAY3;
-unsigned char color_text_status	= COLOR_GRAY2;
-unsigned char color_text_other	= COLOR_GRAY3;
-unsigned char color_text_highlight = COLOR_WHITE;
+    .config.color_background	= COLOR_BLUE,
+    .config.color_border		= COLOR_BLUE,
+    .config.color_selector	= COLOR_WHITE,
+    .config.color_text_borders= COLOR_GRAY2,
+    .config.color_text_menus	= COLOR_GRAY3,
+    .config.color_text_files	= COLOR_GRAY3,
+    .config.color_text_status	= COLOR_GRAY2,
+    .config.color_text_other	= COLOR_GRAY3,
+    .config.color_text_highlight = COLOR_WHITE
 #elif defined(__VIC20__)
-unsigned char color_background	= COLOR_WHITE;
-unsigned char color_border		= COLOR_CYAN;
-unsigned char color_selector	= COLOR_RED;
-unsigned char color_text_borders= COLOR_CYAN;
-unsigned char color_text_menus	= COLOR_BLUE;
-unsigned char color_text_files	= COLOR_BLUE;
-unsigned char color_text_status	= COLOR_BLUE;
-unsigned char color_text_other	= COLOR_BLACK;
-unsigned char color_text_highlight = COLOR_YELLOW;
+    .config.color_background	= COLOR_WHITE,
+    .config.color_border		= COLOR_CYAN,
+    .config.color_selector	= COLOR_RED,
+    .config.color_text_borders= COLOR_CYAN,
+    .config.color_text_menus	= COLOR_BLUE,
+    .config.color_text_files	= COLOR_BLUE,
+    .config.color_text_status	= COLOR_BLUE,
+    .config.color_text_other	= COLOR_BLACK,
+    .config.color_text_highlight = COLOR_YELLOW
 #elif defined(__PLUS4__)
-unsigned char color_background	= COLOR_WHITE;
-unsigned char color_border		= (BCOLOR_BLUE | CATTR_LUMA6);
-unsigned char color_selector	= BCOLOR_RED;
-unsigned char color_text_borders= (BCOLOR_BLUE | CATTR_LUMA6);
-unsigned char color_text_menus	= BCOLOR_BLUE;
-unsigned char color_text_files	= BCOLOR_BLUE;
-unsigned char color_text_status	= BCOLOR_BLUE;
-unsigned char color_text_other	= BCOLOR_BLACK;
-unsigned char color_text_highlight = BCOLOR_YELLOW;
+    .config.color_background	= COLOR_WHITE,
+    .config.color_border		= (BCOLOR_BLUE | CATTR_LUMA6),
+    .config.color_selector	= BCOLOR_RED,
+    .config.color_text_borders= (BCOLOR_BLUE | CATTR_LUMA6),
+    .config.color_text_menus	= BCOLOR_BLUE,
+    .config.color_text_files	= BCOLOR_BLUE,
+    .config.color_text_status	= BCOLOR_BLUE,
+    .config.color_text_other	= BCOLOR_BLACK,
+    .config.color_text_highlight = BCOLOR_YELLOW
 #else
-// We don't need to define most of them on non-color systems
-// because nothing on those systems will touch them.
-unsigned char color_text_borders;
+    .config.color_text_borders= 0
 #endif
+};
 
 /*
 unsigned char color_background;

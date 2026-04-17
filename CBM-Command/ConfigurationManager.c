@@ -340,7 +340,7 @@ static void save(void)
 	unsigned char d;
 	signed char r;
 
-	cbm_open(15,getcurrentdevice(),15,"");	// open the status channel
+	sendDriveCommand(getcurrentdevice(), "");
 	d = cbm_open(1, getcurrentdevice(), 3, "@0:cbmcmd22cfg."
 #ifdef __C64__
 		"c64"

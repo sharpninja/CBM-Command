@@ -73,16 +73,16 @@ static unsigned char SCREEN_BUFFER[size_x * size_y];
 static unsigned char  COLOR_BUFFER[size_x * size_y];
 #endif
 
-bool isDoubleBuffered = false;
+struct ScreenState g_screen = {
+    .isDoubleBuffered = false,
+#if size_x == 40
+    .screenOrientation = ORIENT_HORIZ
+#endif
+};
 #ifdef __C64__
 static unsigned char d018;
 static unsigned char dd00;
 //static unsigned char dd02;
-#endif
-
-#if size_x == 40
-enum orientations screenOrientation =
-	ORIENT_HORIZ;
 #endif
 
 bool copiedCharacters = false;

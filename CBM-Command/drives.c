@@ -71,9 +71,9 @@ static struct drive_status drives[] =
 };
 #endif
 
-struct panel_drive  leftPanelDrive;
-struct panel_drive rightPanelDrive;
-struct panel_drive *selectedPanel = &leftPanelDrive;
+struct DriveState g_drive = {
+    .selectedPanel = &g_drive.leftPanelDrive
+};
 
 static unsigned char currentLeft;
 static unsigned char currentRight;
@@ -118,7 +118,7 @@ static int __fastcall getDriveStatus(
 	//	return -1;
 	//}
 
-	if(cbm_open(15, drive->drive, 15, "") != 0)
+	if(sendDriveCommand(drive->drive, "") != 0)
 	{
 		waitForEnterEscf("_oserror: %u", _oserror);
 		cbm_close(15);
@@ -398,7 +398,7 @@ void __fastcall__ resetSelectedFiles(struct panel_drive *panel)
 #endif
 }
 
-unsigned char displayHeight = 1;
+// Now inside DriveState g_drive
 
 void __fastcall displayDirectory(
 	struct panel_drive *drive)
@@ -849,14 +849,12 @@ struct dir_node* __fastcall__ getSpecificNode(
 		&(panel->slidingWindow[offset]) : NULL;
 }
 
-signed char __fastcall__ sendCommand(
-	const struct panel_drive *panel,
-	const char *command)
+signed char __fastcall sendDriveCommand(unsigned char drive, const char *command)
 {
 #ifdef __CBM__
 	static signed char result;
 
-	cbm_open(15, panel->drive->drive, 15, command);
+	cbm_open(15, drive, 15, command);
 
 	result = cbm_read(15, buffer, (sizeof buffer) - 1);
 	buffer[result < 0 ? 0 : result] = '\0';
@@ -872,6 +870,13 @@ signed char __fastcall__ sendCommand(
 	}
 #endif
 	return 0;
+}
+
+signed char __fastcall__ sendCommand(
+	const struct panel_drive *panel,
+	const char *command)
+{
+	return sendDriveCommand(panel->drive->drive, command);
 }
 
 void __fastcall__ selectAllFiles(struct panel_drive *panel,

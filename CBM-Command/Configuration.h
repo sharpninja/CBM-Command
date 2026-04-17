@@ -58,21 +58,31 @@ struct Configuration
     unsigned char color_text_other;		// Color for areas not covered above
 };
 
-/* Backward compatibility aliases */
-extern unsigned char defaultLeftDrive;
-extern unsigned char defaultRightDrive;
-extern char defaultLeftDisk[4];
-extern char defaultRightDisk[4];
+struct ConfigurationState
+{
+    struct Configuration config;
+    char keyMap[KM_KEYMAP_SIZE];
+};
 
-extern unsigned char color_background;
-extern unsigned char color_border;
-extern unsigned char color_selector;
-extern unsigned char color_text_borders;
-extern unsigned char color_text_menus;
-extern unsigned char color_text_files;
-extern unsigned char color_text_status;
-extern unsigned char color_text_highlight;
-extern unsigned char color_text_other;
+extern struct ConfigurationState g_configstate;
+
+/* Backward compatibility aliases */
+#define defaultLeftDrive g_configstate.config.defaultLeftDrive
+#define defaultRightDrive g_configstate.config.defaultRightDrive
+#define defaultLeftDisk g_configstate.config.defaultLeftDisk
+#define defaultRightDisk g_configstate.config.defaultRightDisk
+
+#define color_background g_configstate.config.color_background
+#define color_border g_configstate.config.color_border
+#define color_selector g_configstate.config.color_selector
+#define color_text_borders g_configstate.config.color_text_borders
+#define color_text_menus g_configstate.config.color_text_menus
+#define color_text_files g_configstate.config.color_text_files
+#define color_text_status g_configstate.config.color_text_status
+#define color_text_highlight g_configstate.config.color_text_highlight
+#define color_text_other g_configstate.config.color_text_other
+
+#define keyMap g_configstate.keyMap
 
 /* Keys Configuration */
 // Key-Map Indices

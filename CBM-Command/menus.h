@@ -153,7 +153,14 @@ void batchCreateDiskImage(void);
 void go64(void);
 #endif
 
-extern unsigned char fileBuffer[COPY_BUFFER_SIZE];
+struct MenuState
+{
+    unsigned char fileBuffer[COPY_BUFFER_SIZE];
+};
+
+extern struct MenuState g_menu;
+
+#define fileBuffer g_menu.fileBuffer
 
 // Menu drawing
 //void __fastcall drawFileMenu(unsigned char);

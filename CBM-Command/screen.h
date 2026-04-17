@@ -46,9 +46,16 @@ enum results { OK_RESULT, CANCEL_RESULT, YES_RESULT, NO_RESULT };
 enum buttons { OK = 1, CANCEL = 2, YES = 4, NO = 8 };	// bit-masks
 enum orientations { ORIENT_VERT, ORIENT_HORIZ };
 
-extern enum orientations screenOrientation;	// direction of dividing line
+struct ScreenState
+{
+    enum orientations screenOrientation;
+    bool isDoubleBuffered;
+};
 
-extern bool isDoubleBuffered;
+extern struct ScreenState g_screen;
+
+#define screenOrientation g_screen.screenOrientation
+#define isDoubleBuffered g_screen.isDoubleBuffered
 void beginDoubleBuffer(void);
 void endDoubleBuffer(void);
 

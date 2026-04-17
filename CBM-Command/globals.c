@@ -48,16 +48,12 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "screen.h"
 //#include "PlatformSpecific.h"
 
+struct GlobalState g_state;
+
 // Shared temporary buffer. Used for configuration load at startup,
 // then safely reused for all temporary operations after initialization.
 // Never allocated twice. No net RAM footprint change.
-unsigned char buffer[47];
 
-#ifdef COLOR_RED
-unsigned char outsideFrame;
-unsigned char outsideScreen;
-unsigned char outsideText;
-#endif
 
 // Obtains the screen's attributes;
 // and, sets up global values, as necessary.

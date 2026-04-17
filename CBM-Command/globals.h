@@ -57,6 +57,8 @@ struct GlobalState
 
 extern struct GlobalState g_state;
 
+#define buffer g_state.buffer
+
 //#include <stdbool.h>
 #include <conio.h>
 
@@ -121,12 +123,11 @@ extern struct GlobalState g_state;
 
 
 //extern bool arePanelsOn;
-extern unsigned char buffer[47];	// (must be long enough to hold configuration file)
 
 #ifdef COLOR_RED
-extern unsigned char outsideFrame;
-extern unsigned char outsideScreen;
-extern unsigned char outsideText;
+#define outsideFrame g_state.outsideFrame
+#define outsideScreen g_state.outsideScreen
+#define outsideText g_state.outsideText
 #endif
 
 void initialize(void);

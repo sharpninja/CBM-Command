@@ -283,8 +283,8 @@ static unsigned char __fastcall getFormat(struct panel_drive *panel)
 	unsigned char format = F_UNKNOWN;
 
 	// Decode the drive's reset-message.
-	cbm_open(15, drive, 15, "ui");
-	if ((r = cbm_read(15, buffer, (sizeof buffer) - 1)) > 0)
+		sendDriveCommand(drive, "ui");
+		if ((r = cbm_read(15, buffer, (sizeof buffer) - 1)) > 0)
 	{
 		buffer[r] = '\0';
 		if (
@@ -1775,8 +1775,6 @@ void copyDisk(void)
 
 			if (trackCount != 0)
 			{
-				cbm_open(15, sd, 15, "");
-				cbm_open(14, td, 15, "");
 				cbm_open(2, sd, 2, "#");
 				cbm_open(3, td, 3, "#");
 
