@@ -128,13 +128,12 @@ struct DriveState
     unsigned char displayHeight;
 };
 
-extern struct DriveState g_drives;
-
 /* Backward compatibility aliases */
-#define leftPanelDrive      g_drives.leftPanelDrive
-#define rightPanelDrive     g_drives.rightPanelDrive
-#define selectedPanel       g_drives.selectedPanel
-#define displayHeight       g_drives.displayHeight
+extern struct panel_drive leftPanelDrive;
+extern struct panel_drive rightPanelDrive;
+extern struct panel_drive *selectedPanel;
+
+extern unsigned char displayHeight;
 
 /* METHODS */
 void initializeDrives(void);
