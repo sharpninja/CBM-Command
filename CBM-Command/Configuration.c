@@ -51,94 +51,94 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "globals.h"
 #include "screen.h"
 
-struct ConfigurationState g_configstate = {
-    .config = {
-        .defaultLeftDrive = 8,
-        .defaultRightDrive = 9,
-        .defaultLeftDisk = "0",
-        .defaultRightDisk = "0"
-    },
-    .keyMap = {
+struct ConfigurationState g_configstate;
+
+void initializeDefaults(void)
 {
-	HK_COPY,			// 0
-	HK_CREATE_D64,		// 1
-	HK_WRITE_D64,		// 2
-	HK_DELETE,			// 3
-	HK_DRIVE_LEFT,		// 4
-	HK_DRIVE_RIGHT,		// 5
-	HK_DRIVE_CURRENT,	// 6
-	HK_DRIVE_COMMAND,	// 7
-	HK_HELP,			// 8
-	HK_MAKE_DIRECTORY,	// 9
-	HK_ENTER_DIRECTORY, //10
-	HK_LEAVE_DIRECTORY, //11
-	HK_PAGE_UP,			//12
-	HK_PAGE_DOWN,		//13
-	HK_QUIT,			//14
-	HK_RENAME,			//15
-	HK_REREAD_LEFT,		//16
-	HK_REREAD_RIGHT,	//17
-	HK_REREAD_SELECTED,	//18
-	HK_SELECT,			//19
-	HK_SELECT_ALL,		//20
-	HK_DESELECT_ALL,	//21
-	HK_TO_TOP,			//22
-	HK_TO_BOTTOM,		//23
-	HK_EXECUTE_SELECTED,//24
-	HK_COPY_DISK,		//25
-	HK_BATCH_CREATE_D64,//26
-	HK_PATH,			//27
-	HK_ORIENTATION		//28
-};
+    g_configstate.config.defaultLeftDrive = 8;
+    g_configstate.config.defaultRightDrive = 9;
+    g_configstate.config.defaultLeftDisk[0] = '0';
+    g_configstate.config.defaultLeftDisk[1] = '\0';
+    g_configstate.config.defaultRightDisk[0] = '0';
+    g_configstate.config.defaultRightDisk[1] = '\0';
 
+    g_configstate.keyMap[KM_COPY]             = HK_COPY;
+    g_configstate.keyMap[KM_CREATE_D64]       = HK_CREATE_D64;
+    g_configstate.keyMap[KM_WRITE_D64]        = HK_WRITE_D64;
+    g_configstate.keyMap[KM_DELETE]           = HK_DELETE;
+    g_configstate.keyMap[KM_DRIVE_LEFT]       = HK_DRIVE_LEFT;
+    g_configstate.keyMap[KM_DRIVE_RIGHT]      = HK_DRIVE_RIGHT;
+    g_configstate.keyMap[KM_DRIVE_CURRENT]    = HK_DRIVE_CURRENT;
+    g_configstate.keyMap[KM_DRIVE_COMMAND]    = HK_DRIVE_COMMAND;
+    g_configstate.keyMap[KM_HELP]             = HK_HELP;
+    g_configstate.keyMap[KM_MAKE_DIRECTORY]   = HK_MAKE_DIRECTORY;
+    g_configstate.keyMap[KM_ENTER_DIRECTORY]  = HK_ENTER_DIRECTORY;
+    g_configstate.keyMap[KM_LEAVE_DIRECTORY]  = HK_LEAVE_DIRECTORY;
+    g_configstate.keyMap[KM_PAGE_UP]          = HK_PAGE_UP;
+    g_configstate.keyMap[KM_PAGE_DOWN]        = HK_PAGE_DOWN;
+    g_configstate.keyMap[KM_QUIT]             = HK_QUIT;
+    g_configstate.keyMap[KM_RENAME]           = HK_RENAME;
+    g_configstate.keyMap[KM_REREAD_LEFT]      = HK_REREAD_LEFT;
+    g_configstate.keyMap[KM_REREAD_RIGHT]     = HK_REREAD_RIGHT;
+    g_configstate.keyMap[KM_REREAD_SELECTED]  = HK_REREAD_SELECTED;
+    g_configstate.keyMap[KM_SELECT]           = HK_SELECT;
+    g_configstate.keyMap[KM_SELECT_ALL]       = HK_SELECT_ALL;
+    g_configstate.keyMap[KM_DESELECT_ALL]     = HK_DESELECT_ALL;
+    g_configstate.keyMap[KM_TO_TOP]           = HK_TO_TOP;
+    g_configstate.keyMap[KM_TO_BOTTOM]        = HK_TO_BOTTOM;
+    g_configstate.keyMap[KM_EXECUTE_SELECTED] = HK_EXECUTE_SELECTED;
+    g_configstate.keyMap[KM_COPY_DISK]        = HK_COPY_DISK;
+    g_configstate.keyMap[KM_BATCH_CREATE_D64] = HK_BATCH_CREATE_D64;
+    g_configstate.keyMap[KM_PATH]             = HK_PATH;
+    g_configstate.keyMap[KM_ORIENTATION]      = HK_ORIENTATION;
 
-/* Color Configuration */
+    /* Color Configuration */
 
-// Choose useful default colors for each model.
+    // Choose useful default colors for each model.
 #if defined(__C128__)
-    .config.color_background	= COLOR_BLACK,
-    .config.color_border		= COLOR_BLACK,
-    .config.color_selector	= COLOR_WHITE,
-    .config.color_text_borders= COLOR_GRAY3,
-    .config.color_text_menus	= COLOR_WHITE,
-    .config.color_text_files	= COLOR_YELLOW,
-    .config.color_text_status = COLOR_GRAY3,
-    .config.color_text_other	= COLOR_WHITE,
-    .config.color_text_highlight = COLOR_YELLOW
+    g_configstate.config.color_background     = COLOR_BLACK;
+    g_configstate.config.color_border         = COLOR_BLACK;
+    g_configstate.config.color_selector       = COLOR_WHITE;
+    g_configstate.config.color_text_borders   = COLOR_GRAY3;
+    g_configstate.config.color_text_menus     = COLOR_WHITE;
+    g_configstate.config.color_text_files     = COLOR_YELLOW;
+    g_configstate.config.color_text_status    = COLOR_GRAY3;
+    g_configstate.config.color_text_other     = COLOR_WHITE;
+    g_configstate.config.color_text_highlight = COLOR_YELLOW;
 #elif defined(__C64__) || defined(__CBM510__)
-    .config.color_background	= COLOR_BLUE,
-    .config.color_border		= COLOR_BLUE,
-    .config.color_selector	= COLOR_WHITE,
-    .config.color_text_borders= COLOR_GRAY2,
-    .config.color_text_menus	= COLOR_GRAY3,
-    .config.color_text_files	= COLOR_GRAY3,
-    .config.color_text_status	= COLOR_GRAY2,
-    .config.color_text_other	= COLOR_GRAY3,
-    .config.color_text_highlight = COLOR_WHITE
+    g_configstate.config.color_background     = COLOR_BLUE;
+    g_configstate.config.color_border         = COLOR_BLUE;
+    g_configstate.config.color_selector       = COLOR_WHITE;
+    g_configstate.config.color_text_borders   = COLOR_GRAY2;
+    g_configstate.config.color_text_menus     = COLOR_GRAY3;
+    g_configstate.config.color_text_files     = COLOR_GRAY3;
+    g_configstate.config.color_text_status    = COLOR_GRAY2;
+    g_configstate.config.color_text_other     = COLOR_GRAY3;
+    g_configstate.config.color_text_highlight = COLOR_WHITE;
 #elif defined(__VIC20__)
-    .config.color_background	= COLOR_WHITE,
-    .config.color_border		= COLOR_CYAN,
-    .config.color_selector	= COLOR_RED,
-    .config.color_text_borders= COLOR_CYAN,
-    .config.color_text_menus	= COLOR_BLUE,
-    .config.color_text_files	= COLOR_BLUE,
-    .config.color_text_status	= COLOR_BLUE,
-    .config.color_text_other	= COLOR_BLACK,
-    .config.color_text_highlight = COLOR_YELLOW
+    g_configstate.config.color_background     = COLOR_WHITE;
+    g_configstate.config.color_border         = COLOR_CYAN;
+    g_configstate.config.color_selector       = COLOR_RED;
+    g_configstate.config.color_text_borders   = COLOR_CYAN;
+    g_configstate.config.color_text_menus     = COLOR_BLUE;
+    g_configstate.config.color_text_files     = COLOR_BLUE;
+    g_configstate.config.color_text_status    = COLOR_BLUE;
+    g_configstate.config.color_text_other     = COLOR_BLACK;
+    g_configstate.config.color_text_highlight = COLOR_YELLOW;
 #elif defined(__PLUS4__)
-    .config.color_background	= COLOR_WHITE,
-    .config.color_border		= (BCOLOR_BLUE | CATTR_LUMA6),
-    .config.color_selector	= BCOLOR_RED,
-    .config.color_text_borders= (BCOLOR_BLUE | CATTR_LUMA6),
-    .config.color_text_menus	= BCOLOR_BLUE,
-    .config.color_text_files	= BCOLOR_BLUE,
-    .config.color_text_status	= BCOLOR_BLUE,
-    .config.color_text_other	= BCOLOR_BLACK,
-    .config.color_text_highlight = BCOLOR_YELLOW
+    g_configstate.config.color_background     = COLOR_WHITE;
+    g_configstate.config.color_border         = (BCOLOR_BLUE | CATTR_LUMA6);
+    g_configstate.config.color_selector       = BCOLOR_RED;
+    g_configstate.config.color_text_borders   = (BCOLOR_BLUE | CATTR_LUMA6);
+    g_configstate.config.color_text_menus     = BCOLOR_BLUE;
+    g_configstate.config.color_text_files     = BCOLOR_BLUE;
+    g_configstate.config.color_text_status    = BCOLOR_BLUE;
+    g_configstate.config.color_text_other     = BCOLOR_BLACK;
+    g_configstate.config.color_text_highlight = BCOLOR_YELLOW;
 #else
-    .config.color_text_borders= 0
+    g_configstate.config.color_text_borders   = 0;
 #endif
-};
+}
 
 /*
 unsigned char color_background;
