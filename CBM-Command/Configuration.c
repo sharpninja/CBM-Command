@@ -53,6 +53,24 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 struct ConfigurationState g_configstate;
 
+#undef defaultLeftDrive
+#undef defaultRightDrive
+#undef defaultLeftDisk
+#undef defaultRightDisk
+#undef color_background
+#undef color_border
+#undef color_selector
+#undef color_text_borders
+#undef color_text_menus
+#undef color_text_files
+#undef color_text_status
+#undef color_text_highlight
+#undef color_text_other
+#undef keyMap
+#undef screenOrientation
+#undef isDoubleBuffered
+#undef fileBuffer
+
 void initializeDefaults(void)
 {
     g_configstate.config.defaultLeftDrive = 8;
