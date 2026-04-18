@@ -114,13 +114,11 @@ struct panel_drive
 	int currentIndex;
 	int displayStartAt;
 	int slidingWindowStartAt;
-	//enum menus position;		// XXX: not used, anymore
 };
 
 /* Global Drive State */
 struct DriveState
 {
-    //extern struct drive_status drives[9];		// The collection of drive statuses
     struct panel_drive leftPanelDrive;	        // The left panel
     struct panel_drive rightPanelDrive;	        // The right panel
     struct panel_drive *selectedPanel;	        // The current panel
@@ -145,28 +143,26 @@ static int __fastcall getDriveStatus(
 
 void __fastcall__ listDrives(const enum menus menu);
 
-//#ifndef __PLUS4__
 extern unsigned char __fastcall__ checkDrive(unsigned char drive);
-//#else
-//static unsigned char __fastcall checkDrivePlus4(unsigned char drive);
-//#endif
 
-unsigned int __fastcall getDirectory(
-	struct panel_drive *drive,
-	int slidingWindowStartAt);
+struct DriveContext
+{
+    unsigned char drive;
+    unsigned char lfn;
+    unsigned char sec;
+    bool open;
+};
 
+signed char __fastcall readDriveError(unsigned char lfn, char* outBuffer, unsigned char bufSize);
+signed char __fastcall driveOpen(struct DriveContext* ctx, unsigned char drive, unsigned char lfn, unsigned char sec);
+void __fastcall driveClose(struct DriveContext* ctx);
+
+unsigned int __fastcall getDirectory(struct panel_drive *drive, int slidingWindowStartAt);
 void __fastcall displayDirectory(
 	struct panel_drive *drive);
 
 char __fastcall getFileType(
 	unsigned char type);
-
-static void __fastcall shortenSize(
-	char* buffer,
-	unsigned int value);
-
-static char* __fastcall shortenString(
-	char* source);
 
 void __fastcall writeSelectorPosition(
 	struct panel_drive *panel,
@@ -224,15 +220,6 @@ void __fastcall__ movePageDown(
 void __fastcall__ moveBottom(
 	struct panel_drive *panel);
 
-//bool __fastcall__ getDriveError(
-//	unsigned char file,
-//	char* message,
-//	unsigned size);
-
-// Use this function, instead of cbm_open(), to open files.  It checks the DOS
-// status message.  It returns a value greater than zero if the device cannot
-// be found.  It returns a negative value if the DOS reports an error;
-// then, the buffer array holds the error string.
 signed char __fastcall__ cbmOpen(unsigned char lfn, unsigned char device,
 	unsigned char sec_addr, const char* path, const char* name,
 	unsigned char errf);

@@ -170,7 +170,6 @@ void load(void)
 #if defined(__CBM__)
 void loadCBM(void)
 {
-	//cbm_open(15, getcurrentdevice(), 15, "");	// open the status channel
 	if (cbm_open(1,
 		// Get the drive from which the program was loaded.
 		defaultLeftDrive = defaultRightDrive = getcurrentdevice(), 2,

@@ -76,7 +76,6 @@ void __fastcall viewFile(
 	//strcat(file, ",s,r");
 	//sprintf(file, "%s:%s", path, filename);
 
-	//cbm_open(15,drive,15,"");
 	if((signed char)(r = cbmOpen(2,drive,CBM_SEQ,path,filename,15)) == 0)
 #endif
 	{

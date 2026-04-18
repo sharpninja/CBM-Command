@@ -110,43 +110,31 @@ void initializeDrives(void)
 static int __fastcall getDriveStatus(
 	struct drive_status *drive)
 {
+	struct DriveContext ctx = {0};
 	int size;
-	//unsigned char dr = drive->drive;
-
-	//if(dr < 8 || dr > 16)
-	//{
-	//	return -1;
-	//}
 
 	if(sendDriveCommand(drive->drive, "") != 0)
 	{
 		waitForEnterEscf("_oserror: %u", _oserror);
-		cbm_close(15);
-
 		return -1;
 	}
 
-	size = cbm_read(15, drive->message, (sizeof drive->message) - 1);
-	if(size > 0)
+	if ((driveOpen(&ctx, drive->drive, 15, 15)) == 0)
 	{
-		cbm_write(15, "ui", 2);
-		size = cbm_read(15, drive->message, (sizeof drive->message) - 1);
+		size = cbm_read(ctx.lfn, drive->message, (sizeof drive->message) - 1);
+		if(size > 0)
+		{
+			cbm_write(ctx.lfn, "ui", 2);
+			size = cbm_read(ctx.lfn, drive->message, (sizeof drive->message) - 1);
+		}
+		drive->message[size < 0 ? 0 : size] = '\0';
+		driveClose(&ctx);
 	}
-	drive->message[size < 0 ? 0 : size] = '\0';
 
-	cbm_close(15);
 	return size;
 }
 
-//#ifdef __PLUS4__
-//static unsigned char __fastcall checkDrivePlus4(unsigned char drive)
-//{
-//	unsigned char result = cbm_open(15, drive, 15, "ui");
-//
-//	cbm_close(15);
-//	return result;
-//}
-//#endif
+
 
 void __fastcall__ listDrives(const enum menus menu)
 {
@@ -849,24 +837,65 @@ struct dir_node* __fastcall__ getSpecificNode(
 		&(panel->slidingWindow[offset]) : NULL;
 }
 
+signed char __fastcall driveOpen(struct DriveContext* ctx, unsigned char drive, unsigned char lfn, unsigned char sec)
+{
+#ifdef __CBM__
+	signed char r;
+
+	ctx->drive = drive;
+	ctx->lfn = lfn;
+	ctx->sec = sec;
+
+	if ((r = cbm_open(lfn, drive, sec, "")) == 0)
+	{
+		ctx->open = true;
+	}
+
+	return r;
+#else
+	return 0;
+#endif
+}
+
+void __fastcall driveClose(struct DriveContext* ctx)
+{
+#ifdef __CBM__
+	if (ctx->open)
+	{
+		cbm_close(ctx->lfn);
+		ctx->open = false;
+	}
+#endif
+}
+
+signed char __fastcall readDriveError(unsigned char lfn, char* outBuffer, unsigned char bufSize)
+{
+#ifdef __CBM__
+	static signed char r;
+
+	r = cbm_read(lfn, outBuffer, bufSize - 1);
+	outBuffer[r < 0 ? 0 : r] = '\0';
+	cbm_close(lfn);
+
+	return (outBuffer[0] != '0') ? -1 : 0;
+#else
+	return 0;
+#endif
+}
+
 signed char __fastcall sendDriveCommand(unsigned char drive, const char *command)
 {
 #ifdef __CBM__
-	static signed char result;
+	static signed char r;
 
-	cbm_open(15, drive, 15, command);
-
-	result = cbm_read(15, buffer, (sizeof buffer) - 1);
-	buffer[result < 0 ? 0 : result] = '\0';
-
-	cbm_close(15);
-
-	// Show error messages.
-	if (buffer[0] != '0')
+	if((r = cbmOpen(15, drive, 15, "", command, 0)) == 0)
 	{
-		writeStatusBar(buffer);
-		waitForEnterEsc();
-		return -1;		// A negative return-value means that command failed.
+		if ((r = readDriveError(15, buffer, sizeof buffer)) < 0)
+		{
+			writeStatusBar(buffer);
+			waitForEnterEsc();
+			return -1;
+		}
 	}
 #endif
 	return 0;
@@ -980,20 +1009,15 @@ signed char __fastcall__ cbmOpen(unsigned char lfn, unsigned char device,
 {
 	static signed char r;
 
-	// Open the drive's command/status channel.
-	if (errf != 0)
-	{
-		cbm_open(errf, device, 15, "");
-	}
-
 	// Don't add a colon when path is empty.
 	sprintf(fileBuffer, (path[0] == '\0') ? "%s%s" : "%s:%s", path, name);
 	if ((r = cbm_open(lfn, device, sec_addr, fileBuffer)) == 0 && errf != 0)
 	{
+		// Open the drive's command/status channel.
+		cbm_open(errf, device, 15, "");
+
 		// Check the DOS status.
-		r = cbm_read(errf, buffer, (sizeof buffer) - 1);
-		buffer[r < 0 ? 0 : r] = '\0';
-		r = (buffer[0] != '0') ? -1 : 0;
+		r = readDriveError(errf, buffer, sizeof buffer);
 	}
 
 	return r;

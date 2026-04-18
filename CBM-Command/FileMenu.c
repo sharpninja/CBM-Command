@@ -278,100 +278,104 @@ static struct panel_drive *targetPanel, *tempPanel;
 //
 static unsigned char __fastcall getFormat(struct panel_drive *panel)
 {
+	struct DriveContext ctx = {0};
 	int r;
 	unsigned char drive = panel->drive->drive;
 	unsigned char format = F_UNKNOWN;
 
 	// Decode the drive's reset-message.
-		sendDriveCommand(drive, "ui");
-		if ((r = cbm_read(15, buffer, (sizeof buffer) - 1)) > 0)
+	sendDriveCommand(drive, "ui");
+	if ((driveOpen(&ctx, drive, 15, 15)) == 0)
 	{
-		buffer[r] = '\0';
-		if (
+		if ((r = cbm_read(ctx.lfn, buffer, (sizeof buffer) - 1)) > 0)
+		{
+			buffer[r] = '\0';
+			if (
 #ifndef __PET__
-			strstr(buffer,"1541") != NULL ||
-			strstr(buffer,"1540") != NULL ||
-			strstr(buffer,"1570") != NULL ||
+				strstr(buffer,"1541") != NULL ||
+				strstr(buffer,"1540") != NULL ||
+				strstr(buffer,"1570") != NULL ||
 #endif
 #if defined(__PET__) || defined(__C64__) || defined(__C128__)
-			strstr(buffer,"2031") != NULL ||
+				strstr(buffer,"2031") != NULL ||
 #endif
 #ifdef __PLUS4__
-			//strstr(buffer, "1551") != NULL ||
-			strstr(buffer, "tdisk") != NULL ||
+				//strstr(buffer, "1551") != NULL ||
+				strstr(buffer, "tdisk") != NULL ||
 #endif
-			false)
-		{
-			format = F_1541;
-		}
-#ifndef __PET__
-		//else if(strstr(buffer,"1571") != NULL)	// ambiguous
-		//{
-		//	format = F_1571;
-		//}
-		else if(strstr(buffer,"1581") != NULL)
-		{
-			format = F_1581;
-		}
-#ifdef __C64__
-		else if(strstr(buffer,"ide64") != NULL)
-		{
-			format = F_IDE64;
-		}
-#endif
-#endif
-		else
-		{
-			// Either the message doesn't tell the format, or it's ambiguous.
-			// Look at the format-codes at the beginning of the raw directory
-			// file.
-			// (Actually, this method could be used instead of the
-			// reset-message, for almost all formats.)
-			cbm_open(2, drive, CBM_SEQ, panel->dollar);	// I hope drive numbers work, here.
-			if ((r = cbm_read(2, buffer, 2)) > 0)
+				false)
 			{
-				// Two bytes might be tested; zero the second one
-				// if only one of them could be read.
-				buffer[r] = '\0';
-				switch (buffer[0])
+				format = F_1541;
+			}
+#ifndef __PET__
+			//else if(strstr(buffer,"1571") != NULL)	// ambiguous
+			//{
+			//	format = F_1571;
+			//}
+			else if(strstr(buffer,"1581") != NULL)
+			{
+				format = F_1581;
+			}
+#ifdef __C64__
+			else if(strstr(buffer,"ide64") != NULL)
+			{
+				format = F_IDE64;
+			}
+#endif
+#endif
+			else
+			{
+				// Either the message doesn't tell the format, or it's ambiguous.
+				// Look at the format-codes at the beginning of the raw directory
+				// file.
+				// (Actually, this method could be used instead of the
+				// reset-message, for almost all formats.)
+				cbm_open(2, drive, CBM_SEQ, panel->dollar);	// I hope drive numbers work, here.
+				if ((r = cbm_read(2, buffer, 2)) > 0)
 				{
-				case 'a':
-					// See if it's double- or single-sided.
-					format = ((signed char)buffer[1] < 0) ? F_1571 : F_1541;
-					break;
+					// Two bytes might be tested; zero the second one
+					// if only one of them could be read.
+					buffer[r] = '\0';
+					switch (buffer[0])
+					{
+					case 'a':
+						// See if it's double- or single-sided.
+						format = ((signed char)buffer[1] < 0) ? F_1571 : F_1541;
+						break;
 #if defined(__PET__) || defined(__C64__) || defined(__C128__)
-				case 'c':
-					// Unfortunately, the CBM 8250 doesn't say
-					// "double-sided" as directly as the 1571 does.
-					// The CBM 8050 has two BAM blocks, while the CBM 8250 has
-					// four BAM blocks.  We read to the third block; if it has
-					// the proper format code, then it's a BAM block, and the
-					// format is double-sided.  If not, then it's a directory
-					// block, and the format is single-sided.
-					format = ((r = cbm_read(2, fileBuffer, 254*3)) == 254*3
-						&& *(unsigned*)(&fileBuffer[254*3-2]) == 'c')
-						? F_8250 : F_8050;
-					break;
+					case 'c':
+						// Unfortunately, the CBM 8250 doesn't say
+						// "double-sided" as directly as the 1571 does.
+						// The CBM 8050 has two BAM blocks, while the CBM 8250 has
+						// four BAM blocks.  We read to the third block; if it has
+						// the proper format code, then it's a BAM block, and the
+						// format is double-sided.  If not, then it's a directory
+						// block, and the format is single-sided.
+						format = ((r = cbm_read(2, fileBuffer, 254*3)) == 254*3
+							&& *(unsigned*)(&fileBuffer[254*3-2]) == 'c')
+							? F_8250 : F_8050;
+						break;
 #endif
 #ifndef __PET__
-				case 'd':
-					format = F_1581;
-					break;
-				case 'h':
-					format = F_DNP;
-					break;
+					case 'd':
+						format = F_1581;
+						break;
+					case 'h':
+						format = F_DNP;
+						break;
 //#ifdef __C64__
-//				case 'i':
-//					format = F_IDE64;
-//					break;
+//					case 'i':
+//						format = F_IDE64;
+//						break;
 //#endif
 #endif
+					}
 				}
+				cbm_close(2);
 			}
-			cbm_close(2);
 		}
+		driveClose(&ctx);
 	}
-	cbm_close(15);
 
 	if (r <= 0)
 	{
@@ -491,7 +495,6 @@ void copyFiles(void)
 						sprintf(targetFilename,"@%s:%s,%c,w",
 							tp,currentNode->name,
 							tolower(getFileType(currentNode->type)));
-						//cbm_open(15,td,15,"");
 						if ((r = cbmOpen(2, td, 3, "", targetFilename, 15)) == 0)
 						{
 							drawBox(
@@ -535,7 +538,6 @@ void copyFiles(void)
 								{
 									cbm_close(2);
 									cbm_close(1);
-									cbm_close(15);
 									cbm_close(14);
 
 									reloadPanels();
@@ -1253,8 +1255,7 @@ bool __fastcall createDiskImage(const char *filename)
 				//	strcat(name, ".d64");
 				//}
 
-				//cbm_open(15, sd, 15, "");
-				if((r = cbmOpen(2, sd, 2, "", "#", 15)) == 0)
+	if((r = cbmOpen(2, sd, 2, "", "#", 15)) == 0)
 				{
 #ifndef __VIC20__
 #if defined(__PET__) || defined(__PLUS4__)
@@ -1330,8 +1331,8 @@ bool __fastcall createDiskImage(const char *filename)
 								cbm_write(3, fileBuffer, 256);
 							}
 						}
-						cbm_close(2); cbm_close(3);
-						cbm_close(15); cbm_close(14);
+					cbm_close(2); cbm_close(3);
+					cbm_close(14);
 #ifndef __VIC20__
 #if defined(__PET__) || defined(__PLUS4__)
 						timeSpent = (clock() - timeStart) / CLOCKS_PER_SEC;
@@ -1378,7 +1379,7 @@ bool __fastcall createDiskImage(const char *filename)
 					writeStatusBar(r >= 0 ? "Source not there" : (char *)buffer);
 #endif
 				}
-				cbm_close(2); cbm_close(15);
+				cbm_close(2);
 			}
 			else
 			{
@@ -1501,7 +1502,6 @@ void writeDiskImage(void)
 				confirmed = writeYesNo("Format Disk",
 					confirm, A_SIZE(confirm));
 
-				//cbm_open(15, sd, 15, "");
 				if((r = cbmOpen(2, sd, CBM_SEQ, sp, currentNode->name, 15)) == 0)
 				{
 					/*
@@ -1631,10 +1631,9 @@ void writeDiskImage(void)
 #endif
 							}
 						}
-						cbm_close(2);
-						cbm_close(3);
-						cbm_close(14);
-						cbm_close(15);
+					cbm_close(2);
+					cbm_close(3);
+					cbm_close(14);
 #ifndef __VIC20__
 #if defined(__PET__) || defined(__PLUS4__)
 						timeSpent = (clock() - timeStart) / CLOCKS_PER_SEC;
@@ -1682,7 +1681,6 @@ void writeDiskImage(void)
 					//waitForEnterEsc();
 				}
 				cbm_close(2);
-				cbm_close(15);
 			}
 		}
 	}
